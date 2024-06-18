@@ -37,9 +37,11 @@ jobs:
           else
             echo "::set-output name=title::Patch"
           fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set Merge Commit Title
         run: |
           gh pr merge ${{ github.event.pull_request.number }} --merge --subject "${{ steps.determine-title.outputs.title }}" --body "Merged by GitHub Actions"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
