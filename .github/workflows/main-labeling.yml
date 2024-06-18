@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [synchronize]
+    types: [edited]
 
 permissions:
   pull-requests: write
@@ -14,6 +14,30 @@ jobs:
   labeler:
     runs-on: ubuntu-latest
     steps:
+      - name: Wait for Correct PR Title
+        id: wait-for-title
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          MAX_ATTEMPTS=5
+          ATTEMPT=0
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            PR_TITLE=$(gh pr view $PR_NUMBER --json title -q .title)
+            if [[ "$PR_TITLE" == "🔖 Release:patch" || "$PR_TITLE" == "🔖 Release:minor" || "$PR_TITLE" == "🔖 Release:major" ]]; then
+              echo "Valid title: $PR_TITLE"
+              break
+            else
+              ATTEMPT=$((ATTEMPT+1))
+              echo "Waiting for valid PR title... (Attempt: $ATTEMPT)"
+              sleep 10
+            fi
+          done
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "PR title did not change to a valid title after $MAX_ATTEMPTS attempts."
+            exit 1
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: PR labeling
         id: labeling
         uses: jimschubert/labeler-action@v2
