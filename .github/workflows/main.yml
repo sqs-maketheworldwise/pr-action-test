@@ -1,0 +1,27 @@
+name: Auto PR Title
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  auto-title:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set PR title
+      if: ${{ github.head_ref == 'stg' || github.ref_name == 'stg' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        BRANCH_NAME=$(echo $GITHUB_REF | awk -F'/' '{print $3}')
+        PR_TITLE="🔖 Release:patch|minor|major"
+        echo "Setting PR title to: $PR_TITLE"
+        curl -X PATCH \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
+          -d "{\"title\":\"${PR_TITLE}\"}"
