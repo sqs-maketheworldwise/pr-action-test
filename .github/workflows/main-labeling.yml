@@ -54,14 +54,13 @@ jobs:
         id: check-title
         run: |
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
-            echo "status=false" >> $GITHUB_OUTPUT
+            exit 1
            else
-            echo "status=true" >> $GITHUB_OUTPUT
+            sleep 10
           fi
 
       - name: PR labeling
         id: labeling
-        if: ${{ steps.check-title.outputs.status == 'true' }}
         uses: jimschubert/labeler-action@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
