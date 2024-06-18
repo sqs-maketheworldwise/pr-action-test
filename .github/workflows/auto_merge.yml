@@ -19,20 +19,28 @@ jobs:
 
       - name: Determine Merge Title
         id: determine-title
-        run: |
-          PATCH=$(grep '\- \[x\] Patch' $GITHUB_EVENT_PATH)
-          MINOR=$(grep '\- \[x\] Minor' $GITHUB_EVENT_PATH)
-          MAJOR=$(grep '\- \[x\] Major' $GITHUB_EVENT_PATH)
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const pr = await github.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number
+            });
 
-          if [ -n "$PATCH" ]; then
-            echo "::set-output name=title::Patch"
-          elif [ -n "$MINOR" ]; then
-            echo "::set-output name=title::Minor"
-          elif [ -n "$MAJOR" ]; then
-            echo "::set-output name=title::Major"
-          else
-            echo "::set-output name=title::Patch"
-          fi
+            const body = pr.data.body;
+
+            let title = "Patch";  // Default title
+
+            if (body.includes('- [x] Patch')) {
+              title = "Patch";
+            } else if (body.includes('- [x] Minor')) {
+              title = "Minor";
+            } else if (body.includes('- [x] Major')) {
+              title = "Major";
+            }
+
+            core.setOutput("title", title);
 
       - name: Set Merge Commit Title
         run: |
