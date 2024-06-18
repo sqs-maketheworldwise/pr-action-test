@@ -55,9 +55,14 @@ jobs:
         run: |
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
             exit 1
-           else
-            sleep 10
           fi
+
+  labeling:
+    needs: title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: PR labeling
         id: labeling
