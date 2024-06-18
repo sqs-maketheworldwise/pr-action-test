@@ -1,7 +1,9 @@
 name: labeling
 
 on:
-  workflow_call:
+  pull_request:
+    branches-ignore:
+      - main
 
 permissions:
   pull-requests: write
