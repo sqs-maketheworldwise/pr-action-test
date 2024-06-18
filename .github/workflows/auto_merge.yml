@@ -17,13 +17,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Check PR Template
-        id: check-template
+      - name: Determine Merge Title
+        id: determine-title
         run: |
           PATCH=$(grep '\- \[x\] Patch' $GITHUB_EVENT_PATH)
           MINOR=$(grep '\- \[x\] Minor' $GITHUB_EVENT_PATH)
           MAJOR=$(grep '\- \[x\] Major' $GITHUB_EVENT_PATH)
-          
+
           if [ -n "$PATCH" ]; then
             echo "::set-output name=title::Patch"
           elif [ -n "$MINOR" ]; then
@@ -36,7 +36,6 @@ jobs:
 
       - name: Set Merge Commit Title
         run: |
-          gh pr merge ${{ github.event.pull_request.number }} --merge --subject "${{ steps.check-template.outputs.title }}" --body "Merged by GitHub Actions"
+          gh pr merge ${{ github.event.pull_request.number }} --merge --subject "${{ steps.determine-title.outputs.title }}" --body "Merged by GitHub Actions"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
