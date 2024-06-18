@@ -1,3 +1,3 @@
 # pr-action-test
 
-final test branch rule
+final test branch rule test
