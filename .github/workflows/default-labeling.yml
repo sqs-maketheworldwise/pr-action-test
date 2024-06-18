@@ -1,0 +1,20 @@
+name: labeling
+
+on:
+  pull_request:
+    branches-ignore:
+      - main
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  labeler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: PR labeling
+        id: labeling
+        uses: jimschubert/labeler-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
