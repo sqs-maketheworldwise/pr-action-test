@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [ opened, edited ]
+    types: [ opened, edited, synchronize ]
 
 permissions:
   contents: write
@@ -48,7 +48,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check PR Title
+        id: check-title
         run: |
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
+            echo "Title invalid."
             exit 1
+           else
+            echo "Title valid."
           fi
+
+      - name: PR Labeling
+        if: ${{ steps.check-title.conclusion == 'success' }}
+        uses: jimschubert/labeler-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
