@@ -10,10 +10,6 @@ permissions:
   pull-requests: write
   contents: write
 
-concurrency:
-  group: ${{ github.head_ref || github.ref_name }}
-  cancel-in-progress: true
-
 jobs:
   labeler:
     runs-on: ubuntu-latest
