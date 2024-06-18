@@ -3,7 +3,7 @@ name: PR Title Enforcer
 on:
   pull_request:
     branches:
-      - stg
+      - main
     types: [opened, edited]
 
 permissions:
@@ -30,13 +30,13 @@ jobs:
           PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q .body)
 
           if [[ "$PR_BODY" == *"- [x] Patch"* ]]; then
-            echo "::set-output name=title::Patch"
+            echo "::set-output name=title::🔖 Release:patch"
           elif [[ "$PR_BODY" == *"- [x] Minor"* ]]; then
-            echo "::set-output name=title::Minor"
+            echo "::set-output name=title::🔖 Release:minor"
           elif [[ "$PR_BODY" == *"- [x] Major"* ]]; then
-            echo "::set-output name=title::Major"
+            echo "::set-output name=title::🔖 Release:major"
           else
-            echo "::set-output name=title::Patch"
+            echo "::set-output name=title::🔖 Release:patch"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
