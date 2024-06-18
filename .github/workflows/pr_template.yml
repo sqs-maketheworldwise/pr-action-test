@@ -1,0 +1,32 @@
+name: Apply PR Template for Staging to Production
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  apply_template:
+    if: github.base_ref == 'stg'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Get PR Number
+      id: get_pr_number
+      run: echo "::set-output name=pr_number::$(echo ${{ github.event.number }})"
+
+    - name: Apply PR Template
+      run: |
+        PR_NUMBER=${{ steps.get_pr_number.outputs.pr_number }}
+        TEMPLATE_CONTENT=$(cat .github/PULL_REQUEST_TEMPLATE/staging_to_production.md)
+        gh pr edit $PR_NUMBER --body "$TEMPLATE_CONTENT"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
