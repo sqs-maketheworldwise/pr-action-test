@@ -1,3 +1,3 @@
 # pr-action-test
 
-pr action tester
+pr action stg
