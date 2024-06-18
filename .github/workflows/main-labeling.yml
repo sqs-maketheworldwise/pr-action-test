@@ -48,14 +48,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check PR Title
-        if: always()
         run: |
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
             exit 1
           fi
 
       - name: PR labeling
-        if: success()
         id: labeling
         uses: jimschubert/labeler-action@v2
         with:
