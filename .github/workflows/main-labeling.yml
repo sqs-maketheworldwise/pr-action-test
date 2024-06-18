@@ -30,13 +30,13 @@ jobs:
           PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q .body)
 
           if [[ "$PR_BODY" == *"- [x] Patch"* ]]; then
-            echo "::set-output name=title::🔖 Release:patch"
+            echo "title=🔖 Release:patch" >> $GITHUB_OUTPUT
           elif [[ "$PR_BODY" == *"- [x] Minor"* ]]; then
-            echo "::set-output name=title::🔖 Release:minor"
+            echo "title=🔖 Release:minor" >> $GITHUB_OUTPUT
           elif [[ "$PR_BODY" == *"- [x] Major"* ]]; then
-            echo "::set-output name=title::🔖 Release:major"
+            echo "title=🔖 Release:major" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=title::⚠️ Warning: Change PR Title"
+            echo "title=⚠️ Warning: Change PR Title" >> $GITHUB_OUTPUT
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -48,12 +48,14 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check PR Title
+        if: always()
         run: |
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
             exit 1
           fi
 
       - name: PR labeling
+        if: success()
         id: labeling
         uses: jimschubert/labeler-action@v2
         with:
