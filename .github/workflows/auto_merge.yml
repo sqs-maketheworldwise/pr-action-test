@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   enforce-merge-title:
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'stg'
+    if: ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == 'stg'
     runs-on: ubuntu-latest
 
     steps:
