@@ -16,10 +16,10 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  repository-projects: write
 
 jobs:
   release-note:
-    if: github.event.pull_request.merged == true && github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: Release Drafter
