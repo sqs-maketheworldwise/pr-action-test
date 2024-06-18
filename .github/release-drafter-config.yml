@@ -1,0 +1,47 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+categories:
+  - title: '신규기능'
+    labels:
+      - '✨ Feature'
+  - title: '실험기능'
+    labels:
+      - '🐧 Experiment'
+  - title: '개선사항'
+    labels:
+      - '⚡️ Improvement'
+  - title: '결함수정'
+    labels:
+      - '🐛 BugFix'
+      - '🚑 Hotfix'
+      - '🔥 Removed'
+  - title: 'Release'
+    labels:
+      - '🔖 Release:major'
+      - '🔖 Release:minor'
+      - '🔖 Release:patch'
+  - title: '코드 개선사항'
+    labels:
+      - '🎨 Code'
+change-template: '- $TITLE (#$NUMBER) by @$AUTHOR '
+change-title-escapes: '\<*_&'
+exclude-labels:
+  - '🚧 Wip'
+  - '🔀 Merge'
+  - '⏪ Revert'
+version-resolver:
+  major:
+    labels:
+      - '🔖 Release:major'
+  minor:
+    labels:
+      - '🔖 Release:minor'
+  patch:
+    labels:
+      - '🔖 Release:patch'
+  default: patch
+template: |
+  ## 변경사항
+  ---
+  $CHANGES
+no-changes-template: '변경사항 없음'
