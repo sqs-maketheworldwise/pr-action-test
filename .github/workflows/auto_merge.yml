@@ -17,30 +17,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
       - name: Determine Merge Title
         id: determine-title
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const pr = await github.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
-            });
+        run: |
+          echo "Getting PR details"
+          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q .body)
 
-            const body = pr.data.body;
-
-            let title = "Patch";  // Default title
-
-            if (body.includes('- [x] Patch')) {
-              title = "Patch";
-            } else if (body.includes('- [x] Minor')) {
-              title = "Minor";
-            } else if (body.includes('- [x] Major')) {
-              title = "Major";
-            }
-
-            core.setOutput("title", title);
+          if [[ "$PR_BODY" == *"- [x] Patch"* ]]; then
+            echo "::set-output name=title::Patch"
+          elif [[ "$PR_BODY" == *"- [x] Minor"* ]]; then
+            echo "::set-output name=title::Minor"
+          elif [[ "$PR_BODY" == *"- [x] Major"* ]]; then
+            echo "::set-output name=title::Major"
+          else
+            echo "::set-output name=title::Patch"
+          fi
 
       - name: Set Merge Commit Title
         run: |
