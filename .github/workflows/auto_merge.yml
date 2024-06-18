@@ -1,0 +1,54 @@
+name: Auto Merge PR to Production
+
+on:
+  pull_request:
+    branches:
+      - main 
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update_merge_title:
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set Merge Title
+      id: set_merge_title
+      run: |
+        if grep -q "\- \[ \] Major" "$GITHUB_EVENT_PATH"; then
+          echo "::set-output name=merge_title::major"
+        elif grep -q "\- \[ \] Minor" "$GITHUB_EVENT_PATH"; then
+          echo "::set-output name=merge_title::minor"
+        else
+          echo "::set-output name=merge_title::patch"
+        fi
+
+    - name: Update PR Title
+      run: |
+        MERGE_TITLE=$(echo ${{ steps.set_merge_title.outputs.merge_title }})
+        PR_NUMBER=$(echo ${{ github.event.pull_request.number }})
+        gh pr edit $PR_NUMBER --title "$MERGE_TITLE"
+
+    - name: Merge PR
+      uses: actions/github-script@v4
+      with:
+        script: |
+          const prNumber = context.payload.pull_request.number;
+          const mergeMethod = "squash"; // or "merge", "rebase"
+          const mergeTitle = "${{ steps.set_merge_title.outputs.merge_title }}";
+          
+          await github.pulls.merge({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            pull_number: prNumber,
+            commit_title: mergeTitle,
+            merge_method: mergeMethod
+          });
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
