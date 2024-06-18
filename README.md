@@ -1,3 +1,3 @@
 # pr-action-test
 
-final test with labeler 11
+final test with labeler 12
