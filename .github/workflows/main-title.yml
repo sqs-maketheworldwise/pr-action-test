@@ -56,9 +56,3 @@ jobs:
            else
             echo "Title valid."
           fi
-
-      - name: PR Labeling
-        if: ${{ steps.check-title.conclusion == 'success' }}
-        uses: jimschubert/labeler-action@v2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
