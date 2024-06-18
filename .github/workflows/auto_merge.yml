@@ -1,28 +1,29 @@
-name: Merge Title Enforcer
+name: PR Title Enforcer
 
 on:
   pull_request:
-    types: [closed]
+    branches:
+      - stg
+    types: [opened, edited]
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  enforce-merge-title:
-    if: ${{ github.event.pull_request.merged }} == 'true' && ${{ github.event.pull_request.base.ref }} == 'stg'
+  enforce-pr-title:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'
+          node-version: '18.12.1'
 
-      - name: Determine Merge Title
+      - name: Determine PR Title
         id: determine-title
         run: |
           echo "Getting PR details"
@@ -40,8 +41,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set Merge Commit Title
+      - name: Update PR Title
         run: |
-          gh pr merge ${{ github.event.pull_request.number }} --merge --subject "${{ steps.determine-title.outputs.title }}" --body "Merged by GitHub Actions"
+          gh pr edit ${{ github.event.pull_request.number }} --title "${{ steps.determine-title.outputs.title }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
