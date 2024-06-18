@@ -3,7 +3,7 @@ name: Apply PR Template for Staging to Production
 on:
   pull_request:
     branches:
-      - main
+      - stg
     types: [opened, edited]
 
 permissions:
