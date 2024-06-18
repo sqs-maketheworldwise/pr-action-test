@@ -1,30 +1,43 @@
-name: Apply PR Template for Staging to Production
+name: PR Template Enforcer
 
 on:
   pull_request:
-    types: [opened, edited]
+    branches:
+      - main
+      - stage
 
 permissions:
   contents: read
   pull-requests: write
 
 jobs:
-  apply_template:
-    if: github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref == 'staging'
+  enforce-template:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Get PR Number
-      id: get_pr_number
-      run: echo "::set-output name=pr_number::$(echo ${{ github.event.number }})"
+      - name: Check PR Template
+        id: check-template
+        run: |
+          PATCH=$(grep '\- \[x\] Patch' $GITHUB_EVENT_PATH)
+          MINOR=$(grep '\- \[x\] Minor' $GITHUB_EVENT_PATH)
+          MAJOR=$(grep '\- \[x\] Major' $GITHUB_EVENT_PATH)
+          
+          if [ -n "$PATCH" ]; then
+            echo "::set-output name=title::Patch"
+          elif [ -n "$MINOR" ]; then
+            echo "::set-output name=title::Minor"
+          elif [ -n "$MAJOR" ]; then
+            echo "::set-output name=title::Major"
+          else
+            echo "::set-output name=title::Patch"
+          fi
 
-    - name: Apply PR Template
-      run: |
-        PR_NUMBER=${{ steps.get_pr_number.outputs.pr_number }}
-        TEMPLATE_CONTENT=$(cat .github/PULL_REQUEST_TEMPLATE/staging_to_production.md)
-        gh pr edit $PR_NUMBER --body "$TEMPLATE_CONTENT"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set PR Title
+        if: github.event.pull_request.base.ref == 'main'
+        uses: peter-evans/commit-comment@v1
+        with:
+          body: "PR Title: ${{ steps.check-template.outputs.title }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
