@@ -1,0 +1,73 @@
+enable:
+  issues: false
+  prs: true
+
+comments:
+  prs: |
+    Labeler has applied any labels matching special text in your title and description.
+    Please review the labels and make any necessary changes.
+
+labels:
+  '✨ Feature':
+    include:
+      - '\bFeat\b'
+      - '\bImplement\b'
+    exclude: [ ]
+  '🐧 Experiment':
+    include:
+      - '\bExperiment\b'
+    exclude: [ ]
+  '⚡️ Improvement': # Feature update, improvement
+    include:
+      - '\bImprove\b'
+      - '\bPerformance\b'
+      - '\bStyle\b'
+      - '\bDesign\b'
+    exclude: [ ]
+  '🎨 Code': # Code update, improvement
+    include:
+      - '\bChore\b'
+      - '\bAdd\b'
+      - '\bUse\b'
+      - '\bRefactor\b'
+      - '\bUpdate\b'
+      - '\bMove\b'
+      - '\bComment\b'
+      - '\bInfra\b'
+    exclude: [ ]
+  '🚧 Wip':
+    include:
+      - '\bWip\b'
+    exclude: [ ]
+  '🔥 Remove':
+    include:
+      - '\bRemove\b'
+    exclude: [ ]
+  '🐛 BugFix':
+    include:
+      - '\bFix\b'
+    exclude: [ ]
+  '🚑 Hotfix':
+    include:
+      - '\bHotfix\b'
+    exclude: [ ]
+  '🔀 Merge':
+    include:
+      - '\bMerge\b'
+    exclude: [ ]
+  '⏪ Revert':
+    include:
+      - '\bRevert\b'
+    exclude: [ ]
+  '🔖 Release:patch':
+    include:
+      - '\bRelease:patch\b'
+    exclude: [ ]
+  '🔖 Release:minor':
+    include:
+      - '\bRelease:minor\b'
+    exclude: [ ]
+  '🔖 Release:major':
+    include:
+      - '\bRelease:major\b'
+    exclude: [ ]

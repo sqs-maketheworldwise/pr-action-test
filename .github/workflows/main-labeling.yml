@@ -1,17 +1,17 @@
-name: PR Title Enforcer
+name: main-labeling
 
 on:
   pull_request:
     branches:
       - main
-    types: [opened, edited]
+    types: [ opened, edited ]
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  enforce-pr-title:
+  labeler:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,7 +36,7 @@ jobs:
           elif [[ "$PR_BODY" == *"- [x] Major"* ]]; then
             echo "::set-output name=title::🔖 Release:major"
           else
-            echo "::set-output name=title::🔖 Release:patch"
+            echo "::set-output name=title::⚠️ Warning: Change PR Title"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -46,3 +46,15 @@ jobs:
           gh pr edit ${{ github.event.pull_request.number }} --title "${{ steps.determine-title.outputs.title }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check PR Title
+        run: |
+          if [ "${{ steps.determine-title.outputs.title }}" != *"Warning"* ]; then
+            exit 1
+          fi
+
+      - name: PR labeling
+        id: labeling
+        uses: jimschubert/labeler-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
