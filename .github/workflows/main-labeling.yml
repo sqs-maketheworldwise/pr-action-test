@@ -60,6 +60,14 @@ jobs:
             echo "Title valid."
           fi
 
+       - name: Stop old bot
+        env:
+          OLD_BOT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST -H "Authorization: token $OLD_BOT_TOKEN" \
+          -d '{"state":"inactive"}' \
+          https://api.github.com/repos/owner/repo/old_bot_endpoint
+
   labeler:
     runs-on: ubuntu-latest
     needs: title
@@ -68,4 +76,4 @@ jobs:
         id: labeling
         uses: jimschubert/labeler-action@v2
         with:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
