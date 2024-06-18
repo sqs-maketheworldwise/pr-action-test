@@ -1,8 +1,7 @@
-## Change Type
+### Describe the changes
+
+Please select the type of changes:
 
 - [ ] Patch
 - [ ] Minor
 - [ ] Major
-
-## Description
-Please describe the changes in this PR.
