@@ -14,6 +14,9 @@ jobs:
   labeler:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Wait for Correct PR Title
         id: wait-for-title
         run: |
