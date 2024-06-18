@@ -1,10 +1,10 @@
-name: main-labeling
+name: PR Labeling
 
 on:
   pull_request:
     branches:
       - main
-    types: [ opened, edited, synchronize ]
+    types: [synchronize]
 
 permissions:
   contents: write
@@ -18,43 +18,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18.12.1'
-
-      - name: Determine PR Title
-        id: determine-title
-        run: |
-          echo "Getting PR details"
-          PR_BODY=$(gh pr view ${{ github.event.pull_request.number }} --json body -q .body)
-
-          if [[ "$PR_BODY" == *"- [x] Patch"* ]]; then
-            echo "title=🔖 Release:patch" >> $GITHUB_OUTPUT
-          elif [[ "$PR_BODY" == *"- [x] Minor"* ]]; then
-            echo "title=🔖 Release:minor" >> $GITHUB_OUTPUT
-          elif [[ "$PR_BODY" == *"- [x] Major"* ]]; then
-            echo "title=🔖 Release:major" >> $GITHUB_OUTPUT
-          else
-            echo "title=⚠️ Warning: Change PR Title" >> $GITHUB_OUTPUT
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update PR Title
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --title "${{ steps.determine-title.outputs.title }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check PR Title
-        run: |
-          if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
-            exit 1
-          fi
-
       - name: PR labeling
-        id: labeling
         uses: jimschubert/labeler-action@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
