@@ -1,10 +1,7 @@
 name: main-labeling
 
 on:
-  pull_request:
-    branches:
-      - main
-    types: [ opened, edited ]
+  workflow_call:
 
 permissions:
   contents: write
