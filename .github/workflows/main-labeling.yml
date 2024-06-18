@@ -1,22 +1,46 @@
-# name: main-labeling
+name: main-labeling
 
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       pr_number:
-#         description: 'The number of the PR to label'
-#         required: true
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, edited, synchronize]
 
-# permissions:
-#   pull-requests: write
-#   contents: write
+permissions:
+  pull-requests: write
+  contents: write
 
-# jobs:
-#   labeler:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: PR labeling
-#         id: labeling
-#         uses: jimschubert/labeler-action@v2
-#         with:
-#           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+jobs:
+  labeler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.12.1'
+
+      - name: Wait for Correct PR Title
+        id: wait-for-title
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          while true; do
+            PR_TITLE=$(gh pr view $PR_NUMBER --json title -q .title)
+            if [[ "$PR_TITLE" == "🔖 Release:patch" || "$PR_TITLE" == "🔖 Release:minor" || "$PR_TITLE" == "🔖 Release:major" ]]; then
+              echo "Valid title: $PR_TITLE"
+              break
+            else
+              echo "Waiting for valid PR title..."
+              sleep 10
+            fi
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: PR labeling
+        id: labeling
+        uses: jimschubert/labeler-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -4,7 +4,7 @@ on:
   pull_request:
     branches:
       - main
-    types: [ opened, edited ]
+    types: [opened, edited, synchronize]
 
 permissions:
   contents: write
@@ -46,11 +46,9 @@ jobs:
 
       - name: Update PR Title
         run: |
-          curl -X PATCH \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }} \
-            -d "{\"title\":\"${{ steps.determine-title.outputs.title }}\"}"
+          gh pr edit ${{ github.event.pull_request.number }} --title "${{ steps.determine-title.outputs.title }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check PR Title
         id: check-title
@@ -58,10 +56,3 @@ jobs:
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
             exit 1
           fi
-
-      - name: PR labeling
-        id: labeling
-        uses: jimschubert/labeler-action@v2
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
