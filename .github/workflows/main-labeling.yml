@@ -4,18 +4,18 @@ on:
   pull_request:
     branches:
       - main
-    # types: [closed]
+    types: [closed]
 
-# permissions:
-#   pull-requests: write
-#   contents: write
+permissions:
+  pull-requests: write
+  contents: write
 
-# jobs:
-#   labeler:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout code
-#         uses: actions/checkout@v4
+jobs:
+  labeler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
 #       # - name: Wait for Correct PR Title
 #       #   id: wait-for-title
