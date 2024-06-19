@@ -1,10 +1,10 @@
-# name: main-labeling
+name: main-labeling
 
-# on:
-#   pull_request:
-#     branches:
-#       - main
-#     types: [closed]
+on:
+  pull_request:
+    branches:
+      - main
+    # types: [closed]
 
 # permissions:
 #   pull-requests: write
