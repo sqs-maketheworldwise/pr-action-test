@@ -45,10 +45,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update PR Title
-        run: |
-          gh pr edit ${{ github.event.pull_request.number }} --title "${{ steps.determine-title.outputs.title }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: ramonsnir/gh-action-pr-title@1.0.0
+        id: vars
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo ${{ steps.determine-title.outputs.title }}
 
       - name: Check PR Title
         id: check-title
@@ -56,3 +57,9 @@ jobs:
           if [[ "${{ steps.determine-title.outputs.title }}" == *"Warning"* ]]; then
             exit 1
           fi
+
+      - name: PR labeling
+        id: labeling
+        uses: jimschubert/labeler-action@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
